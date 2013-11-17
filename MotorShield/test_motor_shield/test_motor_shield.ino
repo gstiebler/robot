@@ -1,25 +1,52 @@
+// Adafruit Motor shield library
+// copyright Adafruit Industries LLC, 2009
+// this code is public domain, enjoy!
+
 #include <AFMotor.h>
- 
-AF_DCMotor motor(2, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
- 
+
+AF_DCMotor motor(4);
+
 void setup() {
   Serial.begin(9600);           // set up Serial library at 9600 bps
   Serial.println("Motor test!");
-  
-  motor.setSpeed(200);     // set the speed to 200/255
-}
+
+  // turn on motor
+  motor.setSpeed(200);
  
+  motor.run(RELEASE);
+}
+
 void loop() {
+  uint8_t i;
+  
   Serial.print("tick");
   
-  motor.run(FORWARD);      // turn it on going forward
-  delay(1000);
+  motor.run(FORWARD);
+  for (i=0; i<255; i++) {
+    motor.setSpeed(i);  
+    delay(10);
+ }
  
-  Serial.print("tock");
-  motor.run(BACKWARD);     // the other way
-  delay(1000);
+  for (i=255; i!=0; i--) {
+    motor.setSpeed(i);  
+    delay(10);
+ }
   
-  Serial.print("tack");
-  motor.run(RELEASE);      // stopped
+  Serial.print("tock");
+
+  motor.run(BACKWARD);
+  for (i=0; i<255; i++) {
+    motor.setSpeed(i);  
+    delay(10);
+ }
+ 
+  for (i=255; i!=0; i--) {
+    motor.setSpeed(i);  
+    delay(10);
+ }
+  
+
+  Serial.print("tech");
+  motor.run(RELEASE);
   delay(1000);
 }
