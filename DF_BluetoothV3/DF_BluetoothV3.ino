@@ -34,6 +34,7 @@ float X, Y, Z;
 int state;
 int currPos;
 char temp[15];
+float coords[3];
 
 void setup()  
 {
@@ -52,30 +53,35 @@ void setup()
   state = 0;
 }
 
+
+
+void writeVar()
+{
+  temp[currPos] = 0;
+  float f = atof(temp);
+  coords[state++] = f;
+  Serial.println(f);
+  currPos = 0;
+}
+
+
+
 void loop() // run over and over
 {
   if (btSerial.available())
   {
     char c = btSerial.read();
-    if(c == ';')
+    if(c == ';' || c == 0x13) // 0x13: DC3
     {
-      temp[currPos] = 0;
-      Serial.println(temp);
-      currPos = 0;
+      writeVar();
+    }
+    else if(c == 'A')
+    {
+      Serial.print("\nStart\n");
+      state = 0;
     }
     else
-    {
-      if(c == 'A')
-      {
-        temp[currPos] = 0;
-        Serial.print("\nEnd\n");
-        Serial.println(temp);
-        state = 0;
-        currPos = 0;
-      }
-      else
-        temp[currPos++] = c;
-    }
+      temp[currPos++] = c;
   }
   if (Serial.available())
     btSerial.write(Serial.read());
