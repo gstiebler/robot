@@ -1,31 +1,83 @@
 /*
-
- DF-BluetoothV3 Bluetooth module
+  Software serial multple serial test
  
- Intefaces the DF-BluetoothV3 Bluetooth module with most Arduino contollers.
+ Receives from the hardware serial, sends to software serial.
+ Receives from software serial, sends to hardware serial.
  
- When the DF-Bluetooth is used on Arduino, please make sure you disconnect the 
- DF-Bluetooth module before uploading any code to your Arduino. It won’t burn 
- your Arduino, but the uploading will fail as the DF-Bluetooth module occupying 
- the TX/RX pins.
+ The circuit: 
+ * RX is digital pin 10 (connect to TX of other device)
+ * TX is digital pin 11 (connect to RX of other device)
  
- * Copyright (c) 2012 by Tony Guntharp. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
- * Please see the LICENSE included with this distribution for details.
+ Note:
+ Not all pins on the Mega and Mega 2560 support change interrupts, 
+ so only the following can be used for RX: 
+ 10, 11, 12, 13, 50, 51, 52, 53, 62, 63, 64, 65, 66, 67, 68, 69
+ 
+ Not all pins on the Leonardo support change interrupts, 
+ so only the following can be used for RX: 
+ 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
+ 
+ created back in the mists of time
+ modified 25 May 2012
+ by Tom Igoe
+ based on Mikal Hart's example
+ 
+ This example code is in the public domain.
  
  */
+#include <SoftwareSerial.h>
 
-void setup() 
-{
-  // Initialize serial communications: Set serial baud rate to 9600
-  Serial.begin(9600);          
-} 
+SoftwareSerial btSerial(10, 11); // RX, TX
 
-void loop() 
+float X, Y, Z;
+
+int state;
+int currPos;
+char temp[15];
+
+void setup()  
 {
-  // Print out our Hello World string followed by a newline
-  Serial.print("Hello World from the DF-BluetoothV3 Bluetooth module");        
-  Serial.println();
-  // 1 second delay
-  delay(1000);                  
+  // Open serial communications and wait for port to open:
+  Serial.begin(57600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
+
+  Serial.println("Goodnight moon!");
+
+  // set the data rate for the SoftwareSerial port
+  btSerial.begin(9600);
+  btSerial.println("AT\n");
+  
+  state = 0;
 }
+
+void loop() // run over and over
+{
+  if (btSerial.available())
+  {
+    char c = btSerial.read();
+    if(c == ';')
+    {
+      temp[currPos] = 0;
+      Serial.println(temp);
+      currPos = 0;
+    }
+    else
+    {
+      if(c == 'A')
+      {
+        temp[currPos] = 0;
+        Serial.print("\nEnd\n");
+        Serial.println(temp);
+        state = 0;
+        currPos = 0;
+      }
+      else
+        temp[currPos++] = c;
+    }
+  }
+  if (Serial.available())
+    btSerial.write(Serial.read());
+}
+
