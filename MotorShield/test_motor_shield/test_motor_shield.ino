@@ -19,7 +19,7 @@ void setup() {
 void loop() {
   uint8_t i;
   
-  Serial.print("tick");
+  Serial.println("tick");
   
   motor.run(FORWARD);
   for (i=0; i<255; i++) {
@@ -32,7 +32,7 @@ void loop() {
     delay(10);
  }
   
-  Serial.print("tock");
+  Serial.println("tock");
 
   motor.run(BACKWARD);
   for (i=0; i<255; i++) {
@@ -46,7 +46,7 @@ void loop() {
  }
   
 
-  Serial.print("tech");
+  Serial.println("tech");
   motor.run(RELEASE);
   delay(1000);
 }

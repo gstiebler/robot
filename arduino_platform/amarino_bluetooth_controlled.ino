@@ -55,6 +55,12 @@ void setup()
 
 
 
+void updateMotorState()
+{
+}
+
+
+
 void writeVar()
 {
   temp[currPos] = 0;
@@ -74,6 +80,9 @@ void loop() // run over and over
     if(c == ';' || c == 0x13) // 0x13: DC3
     {
       writeVar();
+      
+      if(state == 3)
+        updateMotorState();
     }
     else if(c == 'A')
     {
