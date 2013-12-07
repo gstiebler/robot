@@ -1,31 +1,14 @@
 /*
-  Software serial multple serial test
- 
- Receives from the hardware serial, sends to software serial.
- Receives from software serial, sends to hardware serial.
- 
  The circuit: 
  * RX is digital pin 10 (connect to TX of other device)
  * TX is digital pin 11 (connect to RX of other device)
- 
- Note:
- Not all pins on the Mega and Mega 2560 support change interrupts, 
- so only the following can be used for RX: 
- 10, 11, 12, 13, 50, 51, 52, 53, 62, 63, 64, 65, 66, 67, 68, 69
- 
- Not all pins on the Leonardo support change interrupts, 
- so only the following can be used for RX: 
- 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
- 
- created back in the mists of time
- modified 25 May 2012
- by Tom Igoe
- based on Mikal Hart's example
- 
- This example code is in the public domain.
- 
  */
 #include <SoftwareSerial.h>
+#include <AFMotor.h>
+#include <math.h>
+
+AF_DCMotor leftMotor(1);
+AF_DCMotor rightMotor(4);
 
 SoftwareSerial btSerial(10, 11); // RX, TX
 
@@ -50,13 +33,48 @@ void setup()
   btSerial.begin(9600);
   btSerial.println("AT\n");
   
+  leftMotor.run(RELEASE);
+  rightMotor.run(RELEASE);
+  
   state = 0;
+}
+
+
+void setMotorValue(AF_DCMotor &motor, float value)
+{
+  if(value > 0)
+    motor.run(FORWARD);
+  else
+    motor.run(BACKWARD);
+    
+  value = fabs(value * 25.5); // considerando um máximo aprox. de 10.0
+  
+  if(value > 255)
+    value = 255;
+    
+  motor.setSpeed( value );
+  
+  Serial.print( "Motor value: ");
+  Serial.println( value );
 }
 
 
 
 void updateMotorState()
 {
+  float x = coords[0];
+  float y = coords[1];
+  float z = coords[2];
+  
+  float leftValue = z + y;
+  float rightValue = z - y;
+  
+  Serial.println( "Motor value: ");
+  Serial.println( leftValue );
+  Serial.println( rightValue );
+  
+  setMotorValue( leftMotor, leftValue );
+  setMotorValue( rightMotor, rightValue );
 }
 
 
