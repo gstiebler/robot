@@ -8,7 +8,7 @@
 #include <math.h>
 
 AF_DCMotor leftMotor(1);
-AF_DCMotor rightMotor(4);
+AF_DCMotor rightMotor(2);
 
 SoftwareSerial btSerial(10, 11); // RX, TX
 
@@ -42,6 +42,12 @@ void setup()
 
 void setMotorValue(AF_DCMotor &motor, float value)
 {
+  if(fabs(value) < 2.5)
+  {
+    motor.run(RELEASE);
+    return;
+  }
+    
   if(value > 0)
     motor.run(FORWARD);
   else
@@ -49,7 +55,7 @@ void setMotorValue(AF_DCMotor &motor, float value)
     
   value = fabs(value * 25.5); // considerando um máximo aprox. de 10.0
   
-  if(value > 255)
+  if(value > 255.0)
     value = 255;
     
   motor.setSpeed( value );
