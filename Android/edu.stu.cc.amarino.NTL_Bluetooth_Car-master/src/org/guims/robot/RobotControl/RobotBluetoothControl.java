@@ -43,9 +43,9 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
-package edu.stu.cc.amarino.NTL_Bluetooth_Car;
+package org.guims.robot.RobotControl;
 
-import edu.stu.cc.amarino.NTL_Bluetooth_Car.R;
+import org.guims.robot.RobotControl.R;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -60,21 +60,12 @@ import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import at.abraxas.amarino.Amarino;
 
-public class NTL_Bluetooth_Car extends Activity implements
+public class RobotBluetoothControl extends Activity implements
 		OnSeekBarChangeListener {
 
-	private static final String TAG = "NTL_Bluetooth_Car";
-
-	/*
-	 * TODO: change the address to the address of your Bluetooth module and
-	 * ensure your device is added to Amarino 
-	 * 要將這裡改為自己目標藍牙棒的mac位置！
-	 */
-
-	private String DEVICE_ADDRESS = "00:11:05:09:00:84"; // 這是310元的
-
-	// private static final String DEVICE_ADDRESS = "00:12:01:30:02:69";
-	// //這是xbee BT
+	private static final String TAG = "RobotBluetoothControl";
+	
+	private String DEVICE_ADDRESS = "00:11:05:09:00:84";
 
 	final int DELAY = 150;
 	int power_Val;
@@ -161,12 +152,7 @@ public class NTL_Bluetooth_Car extends Activity implements
 		Amarino.connect(this, DEVICE_ADDRESS);
 	}
 
-	// 測試AlertDialog
-	/*
-	 * private void ShowAlertDialog() { Builder MyAlertDialog = new
-	 * AlertDialog.Builder(this); MyAlertDialog.setTitle("標題");
-	 * MyAlertDialog.setMessage("我是內容"); MyAlertDialog.show(); }
-	 */
+	
 
 	@Override
 	protected void onStart() {
