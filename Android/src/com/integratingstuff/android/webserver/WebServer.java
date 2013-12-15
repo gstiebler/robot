@@ -20,14 +20,14 @@ import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 
 import android.content.Context;
+import android.os.Handler;
 
 public class WebServer {
 
 	public static boolean RUNNING = false;
 	public static int serverPort = 8080;
 
-	private static final String ALL_PATTERN = "*";
-	private static final String EXCEL_PATTERN = "/*.xls";
+	//private static final String ALL_PATTERN = "*";
 	private static final String HOME_PATTERN = "/home.html";
 
 	private Context context = null;
@@ -37,7 +37,7 @@ public class WebServer {
 	private HttpService httpService = null;
 	private HttpRequestHandlerRegistry registry = null;
 
-	public WebServer(Context context) {
+	public WebServer(Context context, Handler handler) {
 		this.setContext(context);
 
 		httpproc = new BasicHttpProcessor();
@@ -53,7 +53,7 @@ public class WebServer {
 
 		registry = new HttpRequestHandlerRegistry();
 
-		registry.register(HOME_PATTERN, new HomeCommandHandler(context));
+		registry.register(HOME_PATTERN, new HomeCommandHandler(context, handler));
 
 		httpService.setHandlerResolver(registry);
 	}

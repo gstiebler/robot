@@ -50,6 +50,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -74,6 +77,17 @@ public class RobotBluetoothControl extends Activity implements
 	SeekBar power_SB;
 	TextView powerval_Text;
 	EditText setmac_ET;
+	
+	Handler _handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message inputMessage) {
+            String msg = (String) inputMessage.obj;
+            TextView tvMsg = (TextView) findViewById(R.id.tvMsg);
+            tvMsg.setText(msg);
+            
+            super.handleMessage(inputMessage);
+        }
+    };
 
 	/** Called when the activity is first created. */
 	@Override
@@ -89,7 +103,6 @@ public class RobotBluetoothControl extends Activity implements
 		powerval_Text = (TextView) findViewById(R.id.powerval_LargeText);
 		setmac_ET = (EditText) findViewById(R.id.setmac_EditText);
 
-		// 以下是button宣告及listener
 		Button btnSetmac = (Button) findViewById(R.id.setmac_Button);
 		btnSetmac.setTag(0);
 		btnSetmac.setOnClickListener(btnOnClick);
@@ -121,7 +134,7 @@ public class RobotBluetoothControl extends Activity implements
 		    @Override
 		    public void run() {
 		        try {
-					WebServer ws = new WebServer(context);
+					WebServer ws = new WebServer(context, _handler);
 					ws.startServer();
 		        } catch (Exception e) {
 		            e.printStackTrace();
@@ -129,7 +142,11 @@ public class RobotBluetoothControl extends Activity implements
 		    }
 		};
 		thread.start();
+		
+		//WebServerService wss = new WebServerService( _handler );
 	}
+	
+	
 
 	private Button.OnClickListener btnOnClick = new Button.OnClickListener() {
 

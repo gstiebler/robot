@@ -82,4 +82,14 @@
         android:text="@string/set_power"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <TextView
+        android:id="@+id/tvMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/powerval_LargeText"
+        android:layout_alignBottom="@+id/powerval_LargeText"
+        android:layout_alignRight="@+id/setmac_Button"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
 </RelativeLayout>

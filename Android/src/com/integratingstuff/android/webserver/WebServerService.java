@@ -2,18 +2,25 @@ package com.integratingstuff.android.webserver;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 public class WebServerService extends Service {
 
 	private WebServer server = null;
+	
+	Handler _handler;
+	
+	public WebServerService(Handler handler) {
+		_handler = handler;
+	}
 
 	@Override
 	public void onCreate() {
 		Log.i("HTTPSERVICE", "Creating and starting httpService");
 		super.onCreate();
-		server = new WebServer(this);
+		server = new WebServer(this, _handler);
 		server.startServer();
 	}
 
