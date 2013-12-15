@@ -10,7 +10,7 @@
     <string name="left">Left</string>
     <string name="right">Right</string>
     <string name="stop">STOP</string>
-    <string name="default_mac">00:11:12:06:00:60</string>
+    <string name="default_mac">00:11:05:09:00:84</string>
     <string name="set_mac">Set MAC</string>
     <string name="set_power">Set Power</string>
 

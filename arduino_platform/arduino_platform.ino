@@ -12,12 +12,11 @@ AF_DCMotor rightMotor(2);
 
 SoftwareSerial btSerial(10, 11); // RX, TX
 
-float X, Y, Z;
-
-int state;
 int currPos;
 char temp[15];
-float coords[3];
+char dir;
+
+#define FATOR_MOTOR 2.5
 
 void setup()  
 {
@@ -35,63 +34,6 @@ void setup()
   
   leftMotor.run(RELEASE);
   rightMotor.run(RELEASE);
-  
-  state = 0;
-}
-
-
-void setMotorValue(AF_DCMotor &motor, float value)
-{
-  if(fabs(value) < 2.5)
-  {
-    motor.run(RELEASE);
-    return;
-  }
-    
-  if(value > 0)
-    motor.run(FORWARD);
-  else
-    motor.run(BACKWARD);
-    
-  value = fabs(value * 25.5); // considerando um máximo aprox. de 10.0
-  
-  if(value > 255.0)
-    value = 255;
-    
-  motor.setSpeed( value );
-  
-  Serial.print( "Motor value: ");
-  Serial.println( value );
-}
-
-
-
-void updateMotorState()
-{
-  float x = coords[0];
-  float y = coords[1];
-  float z = coords[2];
-  
-  float leftValue = z + y;
-  float rightValue = z - y;
-  
-  Serial.println( "Motor value: ");
-  Serial.println( leftValue );
-  Serial.println( rightValue );
-  
-  setMotorValue( leftMotor, leftValue );
-  setMotorValue( rightMotor, rightValue );
-}
-
-
-
-void writeVar()
-{
-  temp[currPos] = 0;
-  float f = atof(temp);
-  coords[state++] = f;
-  Serial.println(f);
-  currPos = 0;
 }
 
 
@@ -101,18 +43,61 @@ void loop() // run over and over
   if (btSerial.available())
   {
     char c = btSerial.read();
-    if(c == ';' || c == 0x13) // 0x13: DC3
+    
+    //Serial.print( "Raw read: " );
+    //Serial.println( c );
+    
+    if(currPos == -1)
     {
-      writeVar();
+      dir = c;
+      currPos = 0;
+      return;
+    }
+    
+    if(c == 0x13) // DC3
+    {
+      temp[currPos] = 0;
+      int value = atoi( temp ) * FATOR_MOTOR;
       
-      if(state == 3)
-        updateMotorState();
-    }
-    else if(c == 'A')
-    {
-      Serial.print("\nStart\n");
-      state = 0;
-    }
+      Serial.print( "Direcao: " );
+      Serial.println( dir );
+      Serial.print( "Potencia: " );
+      Serial.println( value );
+      
+      if(dir == 'S')
+      {
+        leftMotor.run(RELEASE);
+        rightMotor.run(RELEASE);
+      } 
+      else
+      {
+        if (dir == 'F')
+        {
+          leftMotor.run(FORWARD);
+          rightMotor.run(FORWARD);
+        }
+        else if (dir == 'B')
+        {
+          leftMotor.run(BACKWARD);
+          rightMotor.run(BACKWARD);
+        }
+        else if (dir == 'L')
+        {
+          leftMotor.run(BACKWARD);
+          rightMotor.run(FORWARD);
+        }
+        else if (dir == 'R')
+        {
+          leftMotor.run(FORWARD);
+          rightMotor.run(BACKWARD);
+        }
+          
+        leftMotor.setSpeed( value );
+        rightMotor.setSpeed( value );
+      }
+      
+      currPos = -1;
+    }  
     else
       temp[currPos++] = c;
   }

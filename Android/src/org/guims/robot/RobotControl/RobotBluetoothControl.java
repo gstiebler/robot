@@ -47,6 +47,7 @@ package org.guims.robot.RobotControl;
 
 import org.guims.robot.RobotControl.R;
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -56,9 +57,9 @@ import android.widget.SeekBar;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import at.abraxas.amarino.Amarino;
+import com.integratingstuff.android.webserver.*;
 
 public class RobotBluetoothControl extends Activity implements
 		OnSeekBarChangeListener {
@@ -112,7 +113,22 @@ public class RobotBluetoothControl extends Activity implements
 		Button btnStop = (Button) findViewById(R.id.stop_Button);
 		btnStop.setTag(5);
 		btnStop.setOnClickListener(btnOnClick);
-
+		
+		final Context context = this;
+		
+		Thread thread = new Thread()
+		{
+		    @Override
+		    public void run() {
+		        try {
+					WebServer ws = new WebServer(context);
+					ws.startServer();
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		    }
+		};
+		thread.start();
 	}
 
 	private Button.OnClickListener btnOnClick = new Button.OnClickListener() {
