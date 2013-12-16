@@ -37,7 +37,7 @@ public class WebServer {
 	private HttpService httpService = null;
 	private HttpRequestHandlerRegistry registry = null;
 
-	public WebServer(Context context, Handler handler) {
+	public WebServer(Context context, Handler handler, String html) {
 		this.setContext(context);
 
 		httpproc = new BasicHttpProcessor();
@@ -52,8 +52,8 @@ public class WebServer {
 		    new DefaultConnectionReuseStrategy(), new DefaultHttpResponseFactory());
 
 		registry = new HttpRequestHandlerRegistry();
-
-		registry.register(HOME_PATTERN, new HomeCommandHandler(context, handler));
+		
+		registry.register(HOME_PATTERN, new HomeCommandHandler(context, handler, html));
 
 		httpService.setHandlerResolver(registry);
 	}

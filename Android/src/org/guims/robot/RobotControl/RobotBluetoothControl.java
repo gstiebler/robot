@@ -45,6 +45,11 @@
  */
 package org.guims.robot.RobotControl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.guims.robot.RobotControl.R;
 import android.app.Activity;
 import android.content.Context;
@@ -128,13 +133,14 @@ public class RobotBluetoothControl extends Activity implements
 		btnStop.setOnClickListener(btnOnClick);
 		
 		final Context context = this;
+		final String htmlFile = readHtmlFile();
 		
 		Thread thread = new Thread()
 		{
 		    @Override
 		    public void run() {
 		        try {
-					WebServer ws = new WebServer(context, _handler);
+					WebServer ws = new WebServer(context, _handler, htmlFile);
 					ws.startServer();
 		        } catch (Exception e) {
 		            e.printStackTrace();
@@ -310,6 +316,30 @@ public class RobotBluetoothControl extends Activity implements
 
 	private void update_Stop() {
 		Amarino.sendDataToArduino(this, DEVICE_ADDRESS, 'S', 0);
+	}
+	
+	String readHtmlFile() {
+		String result = "";
+		// The InputStream opens the resourceId and sends it to the buffer
+		InputStream is = this.getResources().openRawResource(R.raw.home);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		String readLine = null;
+
+		try {
+			// While the BufferedReader readLine is not null
+			while ((readLine = br.readLine()) != null) {
+				result += readLine;
+			}
+
+			// Close the InputStream and BufferedReader
+			is.close();
+			br.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
 	}
 
 }

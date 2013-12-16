@@ -22,10 +22,12 @@ public class HomeCommandHandler implements HttpRequestHandler {
 	
 	private Context context = null;
 	Handler _handler;
+	String _htmlText;
 
-	public HomeCommandHandler(Context context, Handler handler) {
+	public HomeCommandHandler(Context context, Handler handler, String html) {
 		this.context = context;
 		_handler = handler;
+		_htmlText = html;
 	}
 
 	@Override
@@ -34,9 +36,8 @@ public class HomeCommandHandler implements HttpRequestHandler {
 		HttpEntity entity = new EntityTemplate(new ContentProducer() {
 			public void writeTo(final OutputStream outstream) throws IOException {
 				OutputStreamWriter writer = new OutputStreamWriter(outstream, "UTF-8");
-				String resp = "<html><head></head><body><h1>Home<h1><p>This is the homepage.</p></body></html>";
 
-				writer.write(resp);
+				writer.write(_htmlText);
 				writer.flush();
 				
 				String rl = request.getRequestLine().getUri();
