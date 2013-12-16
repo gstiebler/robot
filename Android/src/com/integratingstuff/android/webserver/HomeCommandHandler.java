@@ -10,7 +10,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ContentProducer;
 import org.apache.http.entity.EntityTemplate;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 
@@ -37,21 +36,30 @@ public class HomeCommandHandler implements HttpRequestHandler {
 			public void writeTo(final OutputStream outstream) throws IOException {
 				OutputStreamWriter writer = new OutputStreamWriter(outstream, "UTF-8");
 
-				writer.write(_htmlText);
-				writer.flush();
-				
 				String rl = request.getRequestLine().getUri();
+				String[] param = rl.split("\\?");
 				
-				HttpParams params = request.getParams();
-				Object par = params.getParameter("guipar");
+				if( param.length < 2) {
+					writer.write(_htmlText);
+				} else {
+					String paramValue = parseParameter(param[1]);
 
-				Message completeMessage = _handler.obtainMessage(0, "Chegou pedido");
-				completeMessage.sendToTarget();
+					Message completeMessage = _handler.obtainMessage(0, paramValue);
+					completeMessage.sendToTarget();
+					
+					writer.write("Ok, got it: " + paramValue);
+				}
 				
+				writer.flush();
 			}
 		});
 		response.setHeader("Content-Type", "text/html");
 		response.setEntity(entity);
+	}
+	
+	String parseParameter(String urlParameter) {
+		String[] parameter = urlParameter.split("=");
+		return parameter[1];
 	}
 
 	public Context getContext() {

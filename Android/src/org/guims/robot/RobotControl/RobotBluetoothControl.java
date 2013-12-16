@@ -328,7 +328,7 @@ public class RobotBluetoothControl extends Activity implements
 		try {
 			// While the BufferedReader readLine is not null
 			while ((readLine = br.readLine()) != null) {
-				result += readLine;
+				result += readLine + "\n";
 			}
 
 			// Close the InputStream and BufferedReader
