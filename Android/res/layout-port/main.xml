@@ -92,4 +92,15 @@
         android:text="Large Text"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <FrameLayout
+        android:id="@+id/flCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/forward_Button"
+        android:layout_alignLeft="@+id/setmac_EditText"
+        android:layout_alignRight="@+id/left_Button"
+        android:layout_alignTop="@+id/forward_Button" >
+
+    </FrameLayout>
+
 </RelativeLayout>

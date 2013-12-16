@@ -46,29 +46,42 @@
 package org.guims.robot.RobotControl;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import org.guims.robot.RobotControl.R;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.SeekBar;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import at.abraxas.amarino.Amarino;
-import com.integratingstuff.android.webserver.*;
 
+import com.integratingstuff.android.webserver.WebServer;
+
+@TargetApi(Build.VERSION_CODES.FROYO)
 public class RobotBluetoothControl extends Activity implements
 		OnSeekBarChangeListener {
 
@@ -82,6 +95,8 @@ public class RobotBluetoothControl extends Activity implements
 	SeekBar power_SB;
 	TextView powerval_Text;
 	EditText setmac_ET;
+    private Camera mCamera;
+    private CameraPreview mPreview;
 	
 	Handler _handler = new Handler(Looper.getMainLooper()) {
         @Override
@@ -91,6 +106,29 @@ public class RobotBluetoothControl extends Activity implements
             tvMsg.setText(msg);
             
             super.handleMessage(inputMessage);
+        }
+    };
+    
+    private PictureCallback mPicture = new PictureCallback() {
+
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+
+            File pictureFile = getOutputMediaFile();
+            if (pictureFile == null){
+                Log.d(TAG, "Error creating media file, check storage permissions: ");
+                return;
+            }
+
+            try {
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                fos.write(data);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d(TAG, "Error accessing file: " + e.getMessage());
+            }
         }
     };
 
@@ -150,6 +188,14 @@ public class RobotBluetoothControl extends Activity implements
 		thread.start();
 		
 		//WebServerService wss = new WebServerService( _handler );
+		
+        // Create an instance of Camera
+        mCamera = Camera.open(); 
+
+        // Create our Preview view and set it as the content of our activity.
+        mPreview = new CameraPreview(this, mCamera);
+        FrameLayout fl = (FrameLayout) findViewById(R.id.flCamera);
+        fl.addView(mPreview);
 	}
 	
 	
@@ -315,6 +361,7 @@ public class RobotBluetoothControl extends Activity implements
 	}
 
 	private void update_Stop() {
+		mCamera.takePicture(null, null, mPicture);
 		Amarino.sendDataToArduino(this, DEVICE_ADDRESS, 'S', 0);
 	}
 	
@@ -340,6 +387,33 @@ public class RobotBluetoothControl extends Activity implements
 		}
 		
 		return result;
+	}
+	
+	
+	/** Create a File for saving an image or video */
+	private static File getOutputMediaFile(){
+	    // To be safe, you should check that the SDCard is mounted
+	    // using Environment.getExternalStorageState() before doing this.
+
+	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_PICTURES), "MyCameraApp");
+	    // This location works best if you want the created images to be shared
+	    // between applications and persist after your app has been uninstalled.
+
+	    // Create the storage directory if it does not exist
+	    if (! mediaStorageDir.exists()){
+	        if (! mediaStorageDir.mkdirs()){
+	            Log.d("MyCameraApp", "failed to create directory");
+	            return null;
+	        }
+	    }
+
+	    // Create a media file name
+	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	    File mediaFile;
+
+	    mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
+
+	    return mediaFile;
 	}
 
 }
