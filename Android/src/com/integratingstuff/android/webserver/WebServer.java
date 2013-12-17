@@ -29,6 +29,7 @@ public class WebServer {
 
 	//private static final String ALL_PATTERN = "*";
 	private static final String HOME_PATTERN = "/home.html";
+	private static final String IMAGE_PATTERN = "/image.jpg";
 
 	private Context context = null;
 
@@ -37,7 +38,7 @@ public class WebServer {
 	private HttpService httpService = null;
 	private HttpRequestHandlerRegistry registry = null;
 
-	public WebServer(Context context, Handler handler, String html) {
+	public WebServer(Context context, Handler handler, String html, DataHolder dataHolder) {
 		this.setContext(context);
 
 		httpproc = new BasicHttpProcessor();
@@ -54,6 +55,7 @@ public class WebServer {
 		registry = new HttpRequestHandlerRegistry();
 		
 		registry.register(HOME_PATTERN, new HomeCommandHandler(context, handler, html));
+		registry.register(IMAGE_PATTERN, new ImageCommandHandler(context, handler, dataHolder));
 
 		httpService.setHandlerResolver(registry);
 	}

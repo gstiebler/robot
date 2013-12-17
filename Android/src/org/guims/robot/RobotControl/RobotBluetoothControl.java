@@ -79,6 +79,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import at.abraxas.amarino.Amarino;
 
+import com.integratingstuff.android.webserver.DataHolder;
 import com.integratingstuff.android.webserver.WebServer;
 
 @TargetApi(Build.VERSION_CODES.FROYO)
@@ -97,13 +98,18 @@ public class RobotBluetoothControl extends Activity implements
 	EditText setmac_ET;
     private Camera mCamera;
     private CameraPreview mPreview;
+	DataHolder _dataHolder = new DataHolder();
 	
 	Handler _handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message inputMessage) {
             String msg = (String) inputMessage.obj;
-            TextView tvMsg = (TextView) findViewById(R.id.tvMsg);
-            tvMsg.setText(msg);
+            if(msg.equals("IMAGE"))
+        		mCamera.takePicture(null, null, mPicture);
+            else {
+                TextView tvMsg = (TextView) findViewById(R.id.tvMsg);
+                tvMsg.setText(msg);
+            }
             
             super.handleMessage(inputMessage);
         }
@@ -129,6 +135,11 @@ public class RobotBluetoothControl extends Activity implements
             } catch (IOException e) {
                 Log.d(TAG, "Error accessing file: " + e.getMessage());
             }
+            
+			synchronized (_dataHolder) {
+	            _dataHolder.data = data;
+				_dataHolder.notify();
+			}
         }
     };
 
@@ -178,7 +189,7 @@ public class RobotBluetoothControl extends Activity implements
 		    @Override
 		    public void run() {
 		        try {
-					WebServer ws = new WebServer(context, _handler, htmlFile);
+					WebServer ws = new WebServer(context, _handler, htmlFile, _dataHolder);
 					ws.startServer();
 		        } catch (Exception e) {
 		            e.printStackTrace();

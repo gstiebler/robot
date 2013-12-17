@@ -20,7 +20,7 @@ public class WebServerService extends Service {
 	public void onCreate() {
 		Log.i("HTTPSERVICE", "Creating and starting httpService");
 		super.onCreate();
-		server = new WebServer(this, _handler, "Hello world");
+		server = new WebServer(this, _handler, "Hello world", null);
 		server.startServer();
 	}
 
