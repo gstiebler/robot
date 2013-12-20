@@ -16,6 +16,12 @@ function loadXMLDoc(param)
     xmlhttp.open("POST","home.html?button=" + param,true);
     xmlhttp.send("button=10");
 }
+
+
+function loadImage()
+{
+    document.getElementById("myImage").src="/image.jpg";
+}
 </script>
 </head>
 <body>
@@ -27,6 +33,9 @@ function loadXMLDoc(param)
 <button type="button" onclick="loadXMLDoc( 'L' )">Left</button><br>
 <button type="button" onclick="loadXMLDoc( 'R' )">Right</button><br>
 <button type="button" onclick="loadXMLDoc( 'S' )">Stop</button><br>
+<button type="button" onclick="loadImage()">Change image</button><br>
+
+<img id="myImage" width="320" height="240" src="http://www.google.com/images/srpr/logo3w.png">
 
 </body>
 </html>
