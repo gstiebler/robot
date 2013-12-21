@@ -99,6 +99,7 @@ public class RobotBluetoothControl extends Activity implements
     private Camera mCamera;
     private CameraPreview mPreview;
 	DataHolder _dataHolder = new DataHolder();
+	RobotBluetoothControl _self;
 	
 	Handler _handler = new Handler(Looper.getMainLooper()) {
         @Override
@@ -107,6 +108,7 @@ public class RobotBluetoothControl extends Activity implements
             if(msg.equals("IMAGE"))
         		mCamera.takePicture(null, null, mPicture);
             else {
+        		Amarino.sendDataToArduino(_self, DEVICE_ADDRESS, msg.charAt(0), power_Val);
                 TextView tvMsg = (TextView) findViewById(R.id.tvMsg);
                 tvMsg.setText(msg);
             }
@@ -147,6 +149,7 @@ public class RobotBluetoothControl extends Activity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		_self = this;
 		setContentView(R.layout.main);
 
 		Amarino.connect(this, DEVICE_ADDRESS);
@@ -372,7 +375,7 @@ public class RobotBluetoothControl extends Activity implements
 	}
 
 	private void update_Stop() {
-		mCamera.takePicture(null, null, mPicture);
+		//mCamera.takePicture(null, null, mPicture);
 		Amarino.sendDataToArduino(this, DEVICE_ADDRESS, 'S', 0);
 	}
 	
